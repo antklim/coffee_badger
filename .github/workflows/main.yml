@@ -16,6 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: flutter pub get
-    - run: flutter analyze
-    - run: flutter test --coverage
+    - name: Install dependencies
+      run: pub get
+    - name: Run tests
+      run: pub run test
