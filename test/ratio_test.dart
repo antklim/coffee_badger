@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:coffee_badger/exceptions.dart';
 import 'package:coffee_badger/ratio.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 // TODO: Randomize test inputs (use fuzz test technique).
 // TODO: Use randomized inputs and combination of ratio, coffeePerWater,
