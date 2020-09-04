@@ -1,8 +1,10 @@
 import 'package:coffee_badger/exceptions.dart';
 
-/// ratio returns ratio of coffee and water required to brew.
-///   - coffee - weight of coffee in grams
-///   - water - volume of water in ml
+/// Calculates brew ratio for a given [coffee] weight in grams and [water]
+/// volume in ml.
+///
+/// Throws a [CoffeeWeightNegativeException] if the coffee weight is not valid.
+/// Throws a [WaterVolumeNegativeException] if the water volume is not valid.
 double ratio({double coffee, double water}) {
   if (coffee <= 0) {
     throw CoffeeWeightNegativeException();
@@ -15,10 +17,11 @@ double ratio({double coffee, double water}) {
   return water / coffee;
 }
 
-/// coffeePerWater returns coffee in grams required to brew for provided amount
-/// of water.
-///   - ratio - brewing ratio
-///   - water - volume of water in ml
+/// Calculates coffee weight in grams required to brew for a given [ratio] value
+/// and [water] volume in ml.
+///
+/// Throws a [RatioValueNegativeException] if the ratio value is not valid.
+/// Throws a [WaterVolumeNegativeException] if the water volume is not valid.
 double coffeePerWater({double ratio, double water}) {
   if (ratio <= 0) {
     throw RatioValueNegativeException();
@@ -31,10 +34,11 @@ double coffeePerWater({double ratio, double water}) {
   return water / ratio;
 }
 
-/// waterPerCoffee returns volume of water in ml required to brew provided
-/// weight of coffee in grams.
-///   - ratio - brewing ratio
-///   - coffee - weight of coffee in grams
+/// Calculates water volume in ml required to brew for a given [ratio] value and
+/// [coffee] weight in grams.
+///
+/// Throws a [RatioValueNegativeException] if the ratio value is not valid.
+/// Throws a [CoffeeWeightNegativeException] if the coffee weight is not valid.
 double waterPerCoffee({double ratio, double coffee}) {
   if (ratio <= 0) {
     throw RatioValueNegativeException();
