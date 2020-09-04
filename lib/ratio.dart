@@ -1,8 +1,5 @@
 import 'package:coffee_badger/exceptions.dart';
 
-// TODO: Replace exceptions with
-// https://martinfowler.com/articles/replaceThrowWithNotification.html
-
 /// ratio returns ratio of coffee and water required to brew.
 ///   - coffee - weight of coffee in grams
 ///   - water - volume of water in ml
@@ -15,7 +12,7 @@ double ratio({double coffee, double water}) {
     throw WaterVolumeNegativeException();
   }
 
-  throw NotImplementedException();
+  return water / coffee;
 }
 
 /// coffeePerWater returns coffee in grams required to brew for provided amount
@@ -31,7 +28,7 @@ double coffeePerWater({double ratio, double water}) {
     throw WaterVolumeNegativeException();
   }
 
-  throw NotImplementedException();
+  return water / ratio;
 }
 
 /// waterPerCoffee returns volume of water in ml required to brew provided
@@ -47,5 +44,5 @@ double waterPerCoffee({double ratio, double coffee}) {
     throw CoffeeWeightNegativeException();
   }
 
-  throw NotImplementedException();
+  return ratio * coffee;
 }
