@@ -127,13 +127,7 @@ class RatioScreenState extends State<RatioScreen> {
                     child: TextField(
                       autofocus: true,
                       controller: coffeeController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF6200EE)),
-                        ),
-                        suffixText: 'g',
-                      ),
+                      decoration: decoration(suffix: 'g'),
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.start,
                       onChanged: _onCoffeeInputChanged,
@@ -152,13 +146,7 @@ class RatioScreenState extends State<RatioScreen> {
                     width: 70.0,
                     child: TextField(
                       controller: waterController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF6200EE)),
-                        ),
-                        suffixText: 'ml',
-                      ),
+                      decoration: decoration(suffix: 'ml'),
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.start,
                       onChanged: _onWaterInputChanged,
@@ -298,15 +286,11 @@ class AbsoluteRatioState extends State<AbsoluteRatio> {
           width: 70.0,
           child: TextField(
             autofocus: true,
+            buildCounter: buildCounterNoop,
             controller: ratioController,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF6200EE)),
-              ),
-              prefixText: '1:',
-            ),
+            decoration: decoration(prefix: '1:'),
             keyboardType: TextInputType.number,
+            maxLength: 5,
             onChanged: onRatioChanged,
             textAlign: TextAlign.start,
           ),
@@ -359,13 +343,7 @@ class CompoundRatioState extends State<CompoundRatio> {
             autofocus: true,
             controller: coffeeController,
             buildCounter: buildCounterNoop,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF6200EE)),
-              ),
-              suffixText: 'g',
-            ),
+            decoration: decoration(suffix: 'g'),
             keyboardType: TextInputType.number,
             textAlign: TextAlign.end,
             onChanged: (String s) => onRatioChange(),
@@ -381,13 +359,7 @@ class CompoundRatioState extends State<CompoundRatio> {
           child: TextField(
             controller: waterController,
             buildCounter: buildCounterNoop,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF6200EE)),
-              ),
-              suffixText: 'ml',
-            ),
+            decoration: decoration(suffix: 'ml'),
             keyboardType: TextInputType.number,
             maxLength: 5,
             textAlign: TextAlign.end,
@@ -402,3 +374,12 @@ class CompoundRatioState extends State<CompoundRatio> {
 }
 
 Widget buildCounterNoop(context, {currentLength, isFocused, maxLength}) => null;
+
+InputDecoration decoration({String prefix, String suffix}) => InputDecoration(
+      border: InputBorder.none,
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF6200EE)),
+      ),
+      prefixText: prefix,
+      suffixText: suffix,
+    );
