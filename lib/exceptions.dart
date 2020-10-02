@@ -1,15 +1,11 @@
-class NotImplementedException implements Exception {
+class NotImplemented implements Exception {
   final message = 'Not implemented.';
 }
 
-class CoffeeWeightNegativeException implements Exception {
-  final message = 'Coffee weight must be a positive number.';
-}
+class InvalidArgument implements Exception {
+  final String message;
 
-class RatioValueNegativeException implements Exception {
-  final message = 'Ratio value must be a positive number.';
-}
+  const InvalidArgument([this.message = '']);
 
-class WaterVolumeNegativeException implements Exception {
-  final message = 'Water volume must be a positive number.';
+  String toString() => 'InvalidArgument: $message';
 }
