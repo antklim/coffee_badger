@@ -6,13 +6,12 @@ Widget buildCounterNoop(context, {currentLength, isFocused, maxLength}) => null;
 // TODO: make suffix size is more generic
 InputDecoration decoration({String prefix = '', String suffix = ''}) {
   return InputDecoration(
-    border: InputBorder.none,
-    focusedBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: Color(0xFF6200EE)),
-    ),
-    prefixText: prefix,
-    suffix: SizedBox(width: 20.0, child: Text(suffix)),
-  );
+      border: InputBorder.none,
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF6200EE)),
+      ),
+      prefixText: prefix,
+      suffix: SizedBox(width: 20.0, child: Text(suffix)));
 }
 
 // Example for the future use

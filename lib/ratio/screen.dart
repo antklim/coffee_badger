@@ -11,6 +11,10 @@ import 'package:coffee_badger/ratio/ratio.dart';
 // Coffee state change -- invokes --> water state calculation and water UI update
 // Water state change  -- invokes --> coffee state calculation and coffee UI update
 
+const double _DEFAULT_RATIO = 16.0;
+const double _DEFAULT_COMPOUND_COFFEE_RATIO = 60.0;
+const double _DEFAULT_COMPOUND_WATER_RATIO = 1000.0;
+
 class RatioScreen extends StatefulWidget {
   @override
   _RatioScreenState createState() => _RatioScreenState();
@@ -28,7 +32,7 @@ class _RatioScreenState extends State<RatioScreen> {
   void initState() {
     super.initState();
 
-    ratio = DEFAULT_RATIO;
+    ratio = _DEFAULT_RATIO;
     coffee = 0.0;
     water = 0.0;
 
@@ -85,13 +89,11 @@ class _RatioScreenState extends State<RatioScreen> {
     notifyWaterStateChange(v);
   }
 
-  void notifyCoffeeStateChange(double value) {
-    coffeeController.text = '${value.toStringAsFixed(1)}';
-  }
+  void notifyCoffeeStateChange(double value) =>
+      coffeeController.text = '${value.toStringAsFixed(1)}';
 
-  void notifyWaterStateChange(double value) {
-    waterController.text = '${value.toStringAsFixed(1)}';
-  }
+  void notifyWaterStateChange(double value) =>
+      waterController.text = '${value.toStringAsFixed(1)}';
 
   Widget header() => Container(
       child: Center(child: Text('Ratio calculator')),
@@ -106,12 +108,10 @@ class _RatioScreenState extends State<RatioScreen> {
         children: [
           Flexible(child: Text('Coffee')),
           Flexible(
-            child: _InputContainer(
-              numberInput(
-                  controller: coffeeController,
-                  decoration: decoration(suffix: 'g'),
-                  changeObserver: onCoffeeInputChanged),
-            ),
+            child: _InputContainer(numberInput(
+                controller: coffeeController,
+                decoration: decoration(suffix: 'g'),
+                changeObserver: onCoffeeInputChanged)),
           ),
         ],
       );
@@ -121,12 +121,10 @@ class _RatioScreenState extends State<RatioScreen> {
         children: [
           Flexible(child: Text('Water')),
           Flexible(
-            child: _InputContainer(
-              numberInput(
-                  controller: waterController,
-                  decoration: decoration(suffix: 'ml'),
-                  changeObserver: onWaterInputChanged),
-            ),
+            child: _InputContainer(numberInput(
+                controller: waterController,
+                decoration: decoration(suffix: 'ml'),
+                changeObserver: onWaterInputChanged)),
           ),
         ],
       );
@@ -137,7 +135,7 @@ class _RatioScreenState extends State<RatioScreen> {
       body: Container(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: _LIST_VIEW_PADDING,
             children: <Widget>[
               // TODO: move header outside of list view
               header(),
@@ -171,10 +169,10 @@ class _RatioSettingsState extends State<_RatioSettings> {
   void initState() {
     super.initState();
     ratioType = RatioType.absolute;
-    aRatio = DEFAULT_RATIO;
+    aRatio = _DEFAULT_RATIO;
     cRatio = compoundRatio(
-        coffee: DEFAULT_COMPOUND_COFFEE_RATIO,
-        water: DEFAULT_COMPOUND_WATER_RATIO);
+        coffee: _DEFAULT_COMPOUND_COFFEE_RATIO,
+        water: _DEFAULT_COMPOUND_WATER_RATIO);
   }
 
   void onRatioTypeChange(RatioType v) {
@@ -253,7 +251,7 @@ class _AbsoluteRatioState extends State<_AbsoluteRatio> {
   @override
   void initState() {
     super.initState();
-    ratioController.text = '$DEFAULT_RATIO';
+    ratioController.text = '$_DEFAULT_RATIO';
   }
 
   @override
@@ -274,13 +272,11 @@ class _AbsoluteRatioState extends State<_AbsoluteRatio> {
       children: [
         Flexible(child: Text('Ratio')),
         Flexible(
-          child: _InputContainer(
-            numberInput(
-                controller: ratioController,
-                decoration: decoration(prefix: '1:'),
-                textAlign: TextAlign.start,
-                changeObserver: onRatioChanged),
-          ),
+          child: _InputContainer(numberInput(
+              controller: ratioController,
+              decoration: decoration(prefix: '1:'),
+              textAlign: TextAlign.start,
+              changeObserver: onRatioChanged)),
         ),
       ],
     );
@@ -303,8 +299,8 @@ class _CompoundRatioState extends State<_CompoundRatio> {
   @override
   void initState() {
     super.initState();
-    coffeeController.text = '$DEFAULT_COMPOUND_COFFEE_RATIO';
-    waterController.text = '$DEFAULT_COMPOUND_WATER_RATIO';
+    coffeeController.text = '$_DEFAULT_COMPOUND_COFFEE_RATIO';
+    waterController.text = '$_DEFAULT_COMPOUND_WATER_RATIO';
   }
 
   @override
@@ -328,23 +324,19 @@ class _CompoundRatioState extends State<_CompoundRatio> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
-          child: _InputContainer(
-            numberInput(
-                controller: coffeeController,
-                decoration: decoration(suffix: 'g'),
-                changeObserver: (String s) => onRatioChange()),
-          ),
+          child: _InputContainer(numberInput(
+              controller: coffeeController,
+              decoration: decoration(suffix: 'g'),
+              changeObserver: (String s) => onRatioChange())),
           flex: 2,
         ),
         label('Coffee'),
         Text('/'),
         Flexible(
-          child: _InputContainer(
-            numberInput(
-                controller: waterController,
-                decoration: decoration(suffix: 'ml'),
-                changeObserver: (String s) => onRatioChange()),
-          ),
+          child: _InputContainer(numberInput(
+              controller: waterController,
+              decoration: decoration(suffix: 'ml'),
+              changeObserver: (String s) => onRatioChange())),
           flex: 2,
         ),
         label('Water'),
@@ -353,8 +345,16 @@ class _CompoundRatioState extends State<_CompoundRatio> {
   }
 }
 
-// ignore: non_constant_identifier_names
-Widget _ListRowContainer(Widget child) => Container(child: child, height: 80.0);
+// TODO: consider moving it to the shared UI constants
+const double _INPUT_WIDTH = 80.0;
+const double _LIST_ROW_HEIGHT = 80.0;
+const EdgeInsetsGeometry _LIST_VIEW_PADDING =
+    EdgeInsets.symmetric(horizontal: 24.0);
 
 // ignore: non_constant_identifier_names
-Widget _InputContainer(Widget input) => Container(width: 80.0, child: input);
+Widget _ListRowContainer(Widget child) =>
+    Container(child: child, height: _LIST_ROW_HEIGHT);
+
+// ignore: non_constant_identifier_names
+Widget _InputContainer(Widget input) =>
+    Container(width: _INPUT_WIDTH, child: input);

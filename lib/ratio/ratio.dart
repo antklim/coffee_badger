@@ -1,9 +1,5 @@
 import 'package:coffee_badger/exceptions.dart';
 
-const double DEFAULT_RATIO = 16.0;
-const double DEFAULT_COMPOUND_COFFEE_RATIO = 60.0;
-const double DEFAULT_COMPOUND_WATER_RATIO = 1000.0;
-
 enum RatioType { absolute, compound }
 var ratioTypes = <RatioType, String>{
   RatioType.absolute: 'Absolute value',
