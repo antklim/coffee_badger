@@ -1,13 +1,11 @@
+import 'package:coffee_badger/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:coffee_badger/ratio/ratio.dart';
-import 'package:provider/provider.dart';
 
 // TODO: Add widget test.
-// TODO: Split UI into components.
 // TODO: Add text styling: font, size, color.
-// TODO: Standartize input styling - margins, padding, size.
 // TODO: Set focus to inputs when ratio preferences chanfed.
-// TODO: Make ratio calculator header as a "hero" header with animation.
+// TODO: Make ratio calculator header as a "hero" header with animation (https://flutter.dev/docs/cookbook/lists/floating-app-bar).
 
 // Ratio state change  -- invokes --> water state calculation and water UI update
 // Coffee state change -- invokes --> water state calculation and water UI update
@@ -15,10 +13,10 @@ import 'package:provider/provider.dart';
 
 class RatioScreen extends StatefulWidget {
   @override
-  RatioScreenState createState() => RatioScreenState();
+  _RatioScreenState createState() => _RatioScreenState();
 }
 
-class RatioScreenState extends State<RatioScreen> {
+class _RatioScreenState extends State<RatioScreen> {
   final coffeeController = TextEditingController();
   final waterController = TextEditingController();
 
@@ -95,47 +93,58 @@ class RatioScreenState extends State<RatioScreen> {
     waterController.text = '${value.toStringAsFixed(1)}';
   }
 
+  Widget header() => Container(
+      child: Center(child: Text('Ratio calculator')),
+      height: 200.0,
+      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0));
+
+  Widget divider() =>
+      Container(child: Divider(indent: 10.0, endIndent: 10.0), height: 8.0);
+
+  Widget coffeeInput() => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(child: Text('Coffee')),
+          Flexible(
+            child: _InputContainer(
+              numberInput(
+                  controller: coffeeController,
+                  decoration: decoration(suffix: 'g'),
+                  changeObserver: onCoffeeInputChanged),
+            ),
+          ),
+        ],
+      );
+
+  Widget waterInput() => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(child: Text('Water')),
+          Flexible(
+            child: _InputContainer(
+              numberInput(
+                  controller: waterController,
+                  decoration: decoration(suffix: 'ml'),
+                  changeObserver: onWaterInputChanged),
+            ),
+          ),
+        ],
+      );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         child: SafeArea(
           child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             children: <Widget>[
-              ...header(),
-              RatioSettings(ratioObserver: ratioObserver),
-              ...divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Coffee'),
-                  Container(
-                    width: 70.0,
-                    child: numberInput(
-                        controller: coffeeController,
-                        decoration: decoration(suffix: 'g'),
-                        changeObserver: onCoffeeInputChanged),
-                  ),
-                ],
-              ),
-              ////////////////////////////////////////////////////////////////
-              SizedBox(height: 12.0),
-              ////////////////////////////////////////////////////////////////
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Water'),
-                  Container(
-                    width: 70.0,
-                    child: numberInput(
-                        controller: waterController,
-                        decoration: decoration(suffix: 'ml'),
-                        changeObserver: onWaterInputChanged),
-                  ),
-                ],
-              ),
-              SizedBox(height: 50.0),
+              // TODO: move header outside of list view
+              header(),
+              _RatioSettings(ratioObserver: ratioObserver),
+              divider(),
+              _ListRowContainer(coffeeInput()),
+              _ListRowContainer(waterInput()),
             ],
           ),
         ),
@@ -144,16 +153,16 @@ class RatioScreenState extends State<RatioScreen> {
   }
 }
 
-class RatioSettings extends StatefulWidget {
+class _RatioSettings extends StatefulWidget {
   final void Function(double) ratioObserver;
 
-  const RatioSettings({Key key, this.ratioObserver}) : super(key: key);
+  const _RatioSettings({Key key, this.ratioObserver}) : super(key: key);
 
   @override
-  RatioSettingsState createState() => RatioSettingsState();
+  _RatioSettingsState createState() => _RatioSettingsState();
 }
 
-class RatioSettingsState extends State<RatioSettings> {
+class _RatioSettingsState extends State<_RatioSettings> {
   RatioType ratioType;
   double aRatio; // absolute ratio
   double cRatio; // compound ratio
@@ -201,9 +210,8 @@ class RatioSettingsState extends State<RatioSettings> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Set ratio as'),
-              Container(
-                width: 160.0,
+              Flexible(child: Text('Set ratio as')),
+              Flexible(
                 child: DropdownButton<RatioType>(
                   value: ratioType,
                   items: [
@@ -220,24 +228,26 @@ class RatioSettingsState extends State<RatioSettings> {
             ],
           ),
           ratioType == RatioType.absolute
-              ? AbsoluteRatio(ratioObserver: absoluteRatioObserver)
-              : CompoundRatio(ratioObserver: compaundRatioObserver),
+              ? _ListRowContainer(
+                  _AbsoluteRatio(ratioObserver: absoluteRatioObserver))
+              : _ListRowContainer(
+                  _CompoundRatio(ratioObserver: compaundRatioObserver)),
         ],
       ),
     );
   }
 }
 
-class AbsoluteRatio extends StatefulWidget {
+class _AbsoluteRatio extends StatefulWidget {
   final Function(double) ratioObserver;
 
-  const AbsoluteRatio({Key key, this.ratioObserver}) : super(key: key);
+  const _AbsoluteRatio({Key key, this.ratioObserver}) : super(key: key);
 
   @override
-  AbsoluteRatioState createState() => AbsoluteRatioState();
+  _AbsoluteRatioState createState() => _AbsoluteRatioState();
 }
 
-class AbsoluteRatioState extends State<AbsoluteRatio> {
+class _AbsoluteRatioState extends State<_AbsoluteRatio> {
   final ratioController = TextEditingController();
 
   @override
@@ -262,30 +272,31 @@ class AbsoluteRatioState extends State<AbsoluteRatio> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Ratio'),
-        Container(
-          width: 70.0,
-          child: numberInput(
-              controller: ratioController,
-              decoration: decoration(prefix: '1:'),
-              textAlign: TextAlign.start,
-              changeObserver: onRatioChanged),
+        Flexible(child: Text('Ratio')),
+        Flexible(
+          child: _InputContainer(
+            numberInput(
+                controller: ratioController,
+                decoration: decoration(prefix: '1:'),
+                textAlign: TextAlign.start,
+                changeObserver: onRatioChanged),
+          ),
         ),
       ],
     );
   }
 }
 
-class CompoundRatio extends StatefulWidget {
+class _CompoundRatio extends StatefulWidget {
   final Function({double coffee, double water}) ratioObserver;
 
-  const CompoundRatio({Key key, this.ratioObserver}) : super(key: key);
+  const _CompoundRatio({Key key, this.ratioObserver}) : super(key: key);
 
   @override
-  CompoundRatioState createState() => CompoundRatioState();
+  _CompoundRatioState createState() => _CompoundRatioState();
 }
 
-class CompoundRatioState extends State<CompoundRatio> {
+class _CompoundRatioState extends State<_CompoundRatio> {
   final coffeeController = TextEditingController();
   final waterController = TextEditingController();
 
@@ -309,79 +320,41 @@ class CompoundRatioState extends State<CompoundRatio> {
     widget.ratioObserver(coffee: c, water: w);
   }
 
+  Widget label(String text) => Container(child: Text(text), width: 45.0);
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
-          child: numberInput(
-              controller: coffeeController,
-              decoration: decoration(suffix: 'g'),
-              changeObserver: (String s) => onRatioChange()),
+          child: _InputContainer(
+            numberInput(
+                controller: coffeeController,
+                decoration: decoration(suffix: 'g'),
+                changeObserver: (String s) => onRatioChange()),
+          ),
           flex: 2,
         ),
-        Text('Coffee'),
+        label('Coffee'),
+        Text('/'),
         Flexible(
-          child: Text('/'),
-          flex: 1,
-        ),
-        Flexible(
-          child: numberInput(
-              controller: waterController,
-              decoration: decoration(suffix: 'ml'),
-              changeObserver: (String s) => onRatioChange()),
+          child: _InputContainer(
+            numberInput(
+                controller: waterController,
+                decoration: decoration(suffix: 'ml'),
+                changeObserver: (String s) => onRatioChange()),
+          ),
           flex: 2,
         ),
-        Text('Water'),
+        label('Water'),
       ],
     );
   }
 }
 
-Widget buildCounterNoop(context, {currentLength, isFocused, maxLength}) => null;
+// ignore: non_constant_identifier_names
+Widget _ListRowContainer(Widget child) => Container(child: child, height: 80.0);
 
-InputDecoration decoration({String prefix = '', String suffix = ''}) {
-  return InputDecoration(
-    border: InputBorder.none,
-    focusedBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: Color(0xFF6200EE)),
-    ),
-    prefixText: prefix,
-    // prefix: SizedBox(width: 32, child: Text(prefix)),
-    suffixText: suffix,
-    // suffix: SizedBox(width: 32, child: Text(suffix)),
-  );
-}
-
-TextField numberInput(
-    {TextEditingController controller,
-    InputDecoration decoration,
-    TextAlign textAlign = TextAlign.end,
-    Function(String) changeObserver}) {
-  return TextField(
-    controller: controller,
-    buildCounter: buildCounterNoop,
-    decoration: decoration,
-    keyboardType: TextInputType.number,
-    maxLength: 5,
-    textAlign: textAlign,
-    onChanged: changeObserver,
-  );
-}
-
-List<Widget> header() {
-  return <Widget>[
-    SizedBox(height: 96.0),
-    Center(child: Text('Ratio calculator')),
-    SizedBox(height: 100.0),
-  ];
-}
-
-List<Widget> divider() {
-  return <Widget>[
-    SizedBox(height: 6.0),
-    Divider(indent: 10.0, endIndent: 10.0),
-    SizedBox(height: 12.0),
-  ];
-}
+// ignore: non_constant_identifier_names
+Widget _InputContainer(Widget input) => Container(width: 80.0, child: input);
