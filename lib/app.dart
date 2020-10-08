@@ -1,3 +1,4 @@
+import 'package:coffee_badger/app_theme.dart';
 import 'package:coffee_badger/ratio/screen.dart';
 import 'package:flutter/material.dart';
 
@@ -9,10 +10,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Coffee Badger',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: AppTheme.appTheme,
       home: RatioScreen(),
       // initialRoute: '/ratio',
       // onGenerateRoute: _getRoute,
