@@ -1,17 +1,48 @@
 import 'package:flutter/material.dart';
 
-Widget buildCounterNoop(context, {currentLength, isFocused, maxLength}) => null;
+Widget _buildCounterNoop(context, {currentLength, isFocused, maxLength}) =>
+    null;
 
 // WARN: suffix size selected for particular values g, ml
 // TODO: make suffix size is more generic
-InputDecoration decoration({String prefix = '', String suffix = ''}) {
-  return InputDecoration(
-      border: InputBorder.none,
-      focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: Color(0xFF6200EE)),
+class NumberInput extends StatelessWidget {
+  final TextEditingController controller;
+  final TextAlign textAlign;
+  final String prefix;
+  final String suffix;
+  final double width;
+  final Function(String) changeObserver;
+
+  const NumberInput(
+      {Key key,
+      this.controller,
+      this.textAlign = TextAlign.end,
+      this.prefix = '',
+      this.suffix = '',
+      this.width,
+      this.changeObserver})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      child: TextField(
+        controller: controller,
+        buildCounter: _buildCounterNoop,
+        decoration: InputDecoration(
+          prefixText: prefix,
+          suffix: SizedBox(
+              width: 20.0,
+              child: Text(suffix, style: Theme.of(context).textTheme.caption)),
+        ),
+        keyboardType: TextInputType.number,
+        maxLength: 5,
+        textAlign: textAlign,
+        onChanged: changeObserver,
       ),
-      prefixText: prefix,
-      suffix: SizedBox(width: 20.0, child: Text(suffix)));
+    );
+  }
 }
 
 // Example for the future use
@@ -35,18 +66,3 @@ InputDecoration decoration({String prefix = '', String suffix = ''}) {
 //       textAlign: textAlign,
 //       onChanged: changeObserver,
 //     );
-
-Widget numberInput(
-        {TextEditingController controller,
-        InputDecoration decoration,
-        TextAlign textAlign = TextAlign.end,
-        Function(String) changeObserver}) =>
-    TextField(
-      controller: controller,
-      buildCounter: buildCounterNoop,
-      decoration: decoration,
-      keyboardType: TextInputType.number,
-      maxLength: 5,
-      textAlign: textAlign,
-      onChanged: changeObserver,
-    );
