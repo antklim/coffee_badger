@@ -103,9 +103,6 @@ class _RatioScreenState extends State<RatioScreen> {
       height: 200.0,
       padding: const EdgeInsets.only(top: 10.0, bottom: 10.0));
 
-  Widget divider() =>
-      Container(child: Divider(indent: 10.0, endIndent: 10.0), height: 8.0);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +113,7 @@ class _RatioScreenState extends State<RatioScreen> {
             children: <Widget>[
               header(),
               _RatioSettings(ratioObserver: ratioObserver),
-              divider(),
+              Divider(indent: 10.0, endIndent: 10.0, height: 8.0),
               _ListRowSingleInput(
                 controller: coffeeController,
                 label: 'Coffee',
