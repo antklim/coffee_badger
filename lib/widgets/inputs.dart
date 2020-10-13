@@ -7,18 +7,18 @@ Widget _buildCounterNoop(context, {currentLength, isFocused, maxLength}) =>
 // TODO: make suffix size is more generic
 class NumberInput extends StatelessWidget {
   final TextEditingController controller;
-  final TextAlign textAlign;
   final String prefix;
   final String suffix;
+  final TextAlign textAlign;
   final double width;
   final Function(String) onChanged;
 
   const NumberInput(
       {Key key,
       this.controller,
-      this.textAlign = TextAlign.end,
       this.prefix = '',
       this.suffix = '',
+      this.textAlign = TextAlign.start,
       this.width,
       this.onChanged})
       : super(key: key);

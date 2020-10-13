@@ -2,10 +2,6 @@ import 'package:coffee_badger/exceptions.dart';
 import 'package:coffee_badger/ratio/ratio.dart';
 import 'package:test/test.dart';
 
-// TODO: Randomize test inputs (use fuzz test technique).
-// TODO: Use randomized inputs and combination of ratio, coffeePerWater,
-//       and waterPerCoffee to validate methods behaviour.
-
 void main() {
   group('ratio calculator', () {
     test('throws when coffee weight is not positive', () {
