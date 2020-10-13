@@ -11,7 +11,7 @@ class NumberInput extends StatelessWidget {
   final String prefix;
   final String suffix;
   final double width;
-  final Function(String) changeObserver;
+  final Function(String) onChanged;
 
   const NumberInput(
       {Key key,
@@ -20,7 +20,7 @@ class NumberInput extends StatelessWidget {
       this.prefix = '',
       this.suffix = '',
       this.width,
-      this.changeObserver})
+      this.onChanged})
       : super(key: key);
 
   @override
@@ -39,30 +39,8 @@ class NumberInput extends StatelessWidget {
         keyboardType: TextInputType.number,
         maxLength: 5,
         textAlign: textAlign,
-        onChanged: changeObserver,
+        onChanged: onChanged,
       ),
     );
   }
 }
-
-// Example for the future use
-// typedef TextField Input(
-//     {TextEditingController controller,
-//     InputDecoration decoration,
-//     TextAlign textAlign,
-//     Function(String) changeObserver});
-
-// Input input(TextInputType type) => (
-//         {TextEditingController controller,
-//         InputDecoration decoration,
-//         TextAlign textAlign,
-//         Function(String) changeObserver}) =>
-//     TextField(
-//       controller: controller,
-//       buildCounter: buildCounterNoop,
-//       decoration: decoration,
-//       keyboardType: type,
-//       maxLength: 5,
-//       textAlign: textAlign,
-//       onChanged: changeObserver,
-//     );
