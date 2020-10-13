@@ -4,12 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Widgets::NumberInput', () {
+    WidgetPredicate suffixDecoration =
+        (Widget w) => w is SizedBox && w.width == 20 && w.child is Text;
+
     testWidgets('has default prefix, suffix, and textAlign',
         (WidgetTester tester) async {
       await tester
           .pumpWidget(MaterialApp(home: Scaffold(body: const NumberInput())));
 
-      WidgetPredicate inputPredicate = (Widget w) =>
+      WidgetPredicate input = (Widget w) =>
           w is TextField &&
           w.decoration.prefixText == '' &&
           w.decoration.suffix is SizedBox &&
@@ -17,15 +20,12 @@ void main() {
           w.keyboardType == TextInputType.number &&
           w.maxLength == 5;
 
-      WidgetPredicate suffixDecorationPredicate =
-          (Widget w) => w is SizedBox && w.width == 20 && w.child is Text;
-
-      WidgetPredicate suffixPredicate =
+      WidgetPredicate suffix =
           (Widget w) => w is Text && w.data == '' && w.style.fontSize == 12;
 
-      expect(find.byWidgetPredicate(inputPredicate), findsOneWidget);
-      expect(find.byWidgetPredicate(suffixDecorationPredicate), findsOneWidget);
-      expect(find.byWidgetPredicate(suffixPredicate), findsOneWidget);
+      expect(find.byWidgetPredicate(input), findsOneWidget);
+      expect(find.byWidgetPredicate(suffixDecoration), findsOneWidget);
+      expect(find.byWidgetPredicate(suffix), findsOneWidget);
     });
 
     testWidgets('allows to set prefix, suffix, textAlign, and width',
@@ -41,7 +41,7 @@ void main() {
         ),
       ));
 
-      WidgetPredicate inputPredicate = (Widget w) =>
+      WidgetPredicate input = (Widget w) =>
           w is TextField &&
           w.decoration.prefixText == 'hello' &&
           w.textAlign == TextAlign.center &&
@@ -49,15 +49,12 @@ void main() {
           w.keyboardType == TextInputType.number &&
           w.maxLength == 5;
 
-      WidgetPredicate suffixDecorationPredicate =
-          (Widget w) => w is SizedBox && w.width == 20.0 && w.child is Text;
-
-      WidgetPredicate suffixPredicate =
+      WidgetPredicate suffix =
           (Widget w) => w is Text && w.data == 'test' && w.style.fontSize == 12;
 
-      expect(find.byWidgetPredicate(inputPredicate), findsOneWidget);
-      expect(find.byWidgetPredicate(suffixDecorationPredicate), findsOneWidget);
-      expect(find.byWidgetPredicate(suffixPredicate), findsOneWidget);
+      expect(find.byWidgetPredicate(input), findsOneWidget);
+      expect(find.byWidgetPredicate(suffixDecoration), findsOneWidget);
+      expect(find.byWidgetPredicate(suffix), findsOneWidget);
     });
 
     testWidgets('allows to provide on change handler',
@@ -79,12 +76,12 @@ void main() {
         }),
       );
 
-      WidgetPredicate inputPredicate = (Widget w) =>
+      WidgetPredicate input = (Widget w) =>
           w is TextField && w.decoration.prefixText == 'SuperInput';
 
-      expect(find.byWidgetPredicate(inputPredicate), findsOneWidget);
+      expect(find.byWidgetPredicate(input), findsOneWidget);
 
-      await tester.enterText(find.byWidgetPredicate(inputPredicate), '124');
+      await tester.enterText(find.byWidgetPredicate(input), '124');
 
       await tester.pump();
 
