@@ -1,14 +1,14 @@
-import 'package:coffee_badger/widgets/widgets.dart';
+import 'package:coffee_badger/ratio/state.dart';
 import 'package:flutter/material.dart';
-import 'package:coffee_badger/ratio/ratio.dart';
+import 'package:coffee_badger/widgets/widgets.dart';
+import 'package:coffee_badger/ratio/use_case.dart';
+import 'package:provider/provider.dart';
+
+// TODO: in compound ratio settings replace labels with coffee and beans icons.
 
 // Ratio state change  -- invokes --> water state calculation and water UI update
 // Coffee state change -- invokes --> water state calculation and water UI update
 // Water state change  -- invokes --> coffee state calculation and coffee UI update
-
-const double _DEFAULT_RATIO = 16.0;
-const double _DEFAULT_COMPOUND_COFFEE_RATIO = 60.0;
-const double _DEFAULT_COMPOUND_WATER_RATIO = 1000.0;
 
 // TODO: consider moving it to the shared UI constants
 const double _INPUT_WIDTH = 80.0;
@@ -16,198 +16,60 @@ const double _LIST_ROW_HEIGHT = 80.0;
 const EdgeInsetsGeometry _LIST_VIEW_PADDING =
     EdgeInsets.symmetric(horizontal: 24.0);
 
-class RatioScreen extends StatefulWidget {
+class RatioScreen extends StatelessWidget {
   @override
-  _RatioScreenState createState() => _RatioScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<RatioState>(
+      create: (_) => RatioState(),
+      builder: (context, _) {
+        return Scaffold(
+          body: Container(
+            child: SafeArea(
+              child: ListView(
+                padding: _LIST_VIEW_PADDING,
+                children: <Widget>[
+                  _Header(),
+                  _RatioSettings(),
+                  Divider(indent: 10.0, endIndent: 10.0, height: 8.0),
+                  _BrewSettings(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _RatioScreenState extends State<RatioScreen> {
-  final coffeeController = TextEditingController();
-  final waterController = TextEditingController();
-
-  double ratio;
-  double coffee;
-  double water;
-
+class _Header extends StatelessWidget {
   @override
-  void initState() {
-    super.initState();
-
-    ratio = _DEFAULT_RATIO;
-    coffee = 0.0;
-    water = 0.0;
-
-    coffeeController.text = '$coffee';
-    waterController.text = '$water';
-  }
-
-  @override
-  void dispose() {
-    coffeeController.dispose();
-    waterController.dispose();
-    super.dispose();
-  }
-
-  void ratioObserver(double v) {
-    if (v == 0.0 || v == ratio) return;
-    setState(() {
-      ratio = v;
-    });
-    calculateWater();
-  }
-
-  void onCoffeeInputChanged(String v) {
-    var value = double.tryParse(v) ?? 0.0;
-    if (value == 0.0 || value == coffee) return;
-    setState(() {
-      coffee = value;
-    });
-    calculateWater();
-  }
-
-  void onWaterInputChanged(String v) {
-    var value = double.tryParse(v) ?? 0.0;
-    if (value == 0.0 || value == water) return;
-    setState(() {
-      water = value;
-    });
-    calculateCoffee();
-  }
-
-  void calculateCoffee() {
-    final v = coffeePerWater(ratio: ratio, water: water);
-    setState(() {
-      coffee = v;
-    });
-    notifyCoffeeStateChange(v);
-  }
-
-  void calculateWater() {
-    final v = waterPerCoffee(ratio: ratio, coffee: coffee);
-    setState(() {
-      water = v;
-    });
-    notifyWaterStateChange(v);
-  }
-
-  void notifyCoffeeStateChange(double value) =>
-      coffeeController.text = '${value.toStringAsFixed(1)}';
-
-  void notifyWaterStateChange(double value) =>
-      waterController.text = '${value.toStringAsFixed(1)}';
-
-  Widget header() => Container(
+  Widget build(BuildContext context) {
+    return Container(
       child: Center(
           child: Text('Ratio calculator',
               style: Theme.of(context).textTheme.headline4)),
       height: 200.0,
-      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0));
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: SafeArea(
-          child: ListView(
-            padding: _LIST_VIEW_PADDING,
-            children: <Widget>[
-              header(),
-              _RatioSettings(ratioObserver: ratioObserver),
-              Divider(indent: 10.0, endIndent: 10.0, height: 8.0),
-              _ListRowSingleInput(
-                controller: coffeeController,
-                label: 'Coffee',
-                suffix: 'g',
-                textAlign: TextAlign.end,
-                onChanged: onCoffeeInputChanged,
-              ),
-              _ListRowSingleInput(
-                controller: waterController,
-                label: 'Water',
-                suffix: 'ml',
-                textAlign: TextAlign.end,
-                onChanged: onWaterInputChanged,
-              ),
-            ],
-          ),
-        ),
-      ),
+      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
     );
   }
 }
 
 class _RatioSettings extends StatefulWidget {
-  final void Function(double) ratioObserver;
-
-  const _RatioSettings({Key key, this.ratioObserver}) : super(key: key);
-
   @override
   _RatioSettingsState createState() => _RatioSettingsState();
 }
 
 class _RatioSettingsState extends State<_RatioSettings> {
-  final ratioController = TextEditingController();
-  final coffeeController = TextEditingController();
-  final waterController = TextEditingController();
-
-  RatioType ratioType;
-  double aRatio; // absolute ratio
-  double cRatio; // compound ratio
-
-  @override
-  void initState() {
-    super.initState();
-    ratioType = RatioType.absolute;
-
-    aRatio = _DEFAULT_RATIO;
-    ratioController.text = '$_DEFAULT_RATIO';
-
-    cRatio = compoundRatio(
-        coffee: _DEFAULT_COMPOUND_COFFEE_RATIO,
-        water: _DEFAULT_COMPOUND_WATER_RATIO);
-    coffeeController.text = '$_DEFAULT_COMPOUND_COFFEE_RATIO';
-    waterController.text = '$_DEFAULT_COMPOUND_WATER_RATIO';
-  }
-
-  @override
-  void dispose() {
-    ratioController.dispose();
-    coffeeController.dispose();
-    waterController.dispose();
-    super.dispose();
-  }
-
-  void onRatioTypeChange(RatioType v) {
-    var r = v == RatioType.absolute ? aRatio : cRatio;
-    setState(() {
-      ratioType = v;
-    });
-    widget.ratioObserver(r);
-  }
-
-  void onAbsoluteRatioChanged(String v) {
-    var value = double.tryParse(v) ?? 0.0;
-    if (value == 0.0) return;
-    setState(() {
-      aRatio = value;
-    });
-    widget.ratioObserver(value);
-  }
-
-  void onCompaundRatioChanged(String s) {
-    var coffee = double.tryParse(coffeeController.text) ?? 0.0;
-    var water = double.tryParse(waterController.text) ?? 0.0;
-    if (coffee == 0.0 || water == 0.0) return;
-
-    var r = compoundRatio(coffee: coffee, water: water);
-    setState(() {
-      cRatio = r;
-    });
-    widget.ratioObserver(r);
-  }
+  final ratioTypes = <RatioType, String>{
+    RatioType.absolute: 'Absolute value',
+    RatioType.compound: 'Coffee per water'
+  };
 
   @override
   Widget build(BuildContext context) {
+    RatioState state = Provider.of<RatioState>(context);
+
     return Container(
       child: ListBody(
         children: [
@@ -219,50 +81,89 @@ class _RatioSettingsState extends State<_RatioSettings> {
                       style: Theme.of(context).textTheme.bodyText1)),
               Flexible(
                 child: DropdownButton<RatioType>(
-                  value: ratioType,
-                  items: [
-                    DropdownMenuItem(
-                        child: Text(ratioTypes[RatioType.absolute]),
-                        value: RatioType.absolute),
-                    DropdownMenuItem(
-                        child: Text(ratioTypes[RatioType.compound]),
-                        value: RatioType.compound),
-                  ],
-                  onChanged: onRatioTypeChange,
+                  value: state.activeRatio,
+                  items: ratioTypes.entries
+                      .map((entry) => DropdownMenuItem(
+                          child: Text(entry.value), value: entry.key))
+                      .toList(),
+                  onChanged: state.setRatioType,
                 ),
               ),
             ],
           ),
-          ratioType == RatioType.absolute
-              ? _ListRowSingleInput(
-                  controller: ratioController,
-                  label: 'Ratio',
-                  prefix: '1:',
-                  onChanged: onAbsoluteRatioChanged,
-                )
-              : _CompoundRatio(
-                  coffeeController: coffeeController,
-                  waterController: waterController,
-                  onChanged: onCompaundRatioChanged),
+          state.activeRatio == RatioType.absolute
+              ? _AbsoluteRatio()
+              : _CompoundRatio()
         ],
       ),
     );
   }
 }
 
-class _CompoundRatio extends StatelessWidget {
-  // TODO: replace labels with coffee and beans icons.
+class _AbsoluteRatio extends StatefulWidget {
+  @override
+  _AbsoluteRatioState createState() => _AbsoluteRatioState();
+}
 
-  final TextEditingController coffeeController;
-  final TextEditingController waterController;
-  final Function(String) onChanged;
+class _AbsoluteRatioState extends State<_AbsoluteRatio> {
+  TextEditingController controller;
 
-  const _CompoundRatio(
-      {Key key, this.coffeeController, this.waterController, this.onChanged})
-      : super(key: key);
+  @override
+  void initState() {
+    super.initState();
+    final RatioState state = Provider.of<RatioState>(context, listen: false);
+    controller = TextEditingController(text: '${state.absoluteRatio}');
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    RatioState state = Provider.of<RatioState>(context);
+
+    return _ListRowSingleInput(
+      controller: controller,
+      label: 'Ratio',
+      prefix: '1:',
+      onChanged: state.setRatio,
+    );
+  }
+}
+
+class _CompoundRatio extends StatefulWidget {
+  @override
+  _CompoundRatioState createState() => _CompoundRatioState();
+}
+
+class _CompoundRatioState extends State<_CompoundRatio> {
+  TextEditingController coffeeController;
+  TextEditingController waterController;
+
+  @override
+  void initState() {
+    super.initState();
+    final RatioState state = Provider.of<RatioState>(context, listen: false);
+    coffeeController =
+        TextEditingController(text: '${state.compoundRatioCoffee}');
+    waterController =
+        TextEditingController(text: '${state.compoundRatioWater}');
+  }
+
+  @override
+  void dispose() {
+    coffeeController.dispose();
+    waterController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    RatioState state = Provider.of<RatioState>(context);
+
     return Container(
       height: _LIST_ROW_HEIGHT,
       child: Row(
@@ -273,7 +174,7 @@ class _CompoundRatio extends StatelessWidget {
                 controller: coffeeController,
                 suffix: 'g',
                 width: _INPUT_WIDTH,
-                onChanged: onChanged),
+                onChanged: state.setCompoundRatio(RatioParameter.coffee)),
             flex: 2,
           ),
           Container(
@@ -286,13 +187,76 @@ class _CompoundRatio extends StatelessWidget {
                 controller: waterController,
                 suffix: 'ml',
                 width: _INPUT_WIDTH,
-                onChanged: onChanged),
+                onChanged: state.setCompoundRatio(RatioParameter.water)),
             flex: 2,
           ),
           Container(
               child:
                   Text('Water', style: Theme.of(context).textTheme.bodyText1),
               width: 55.0),
+        ],
+      ),
+    );
+  }
+}
+
+class _BrewSettings extends StatefulWidget {
+  @override
+  _BrewSettingsState createState() => _BrewSettingsState();
+}
+
+class _BrewSettingsState extends State<_BrewSettings> {
+  TextEditingController coffeeController;
+  TextEditingController waterController;
+
+  @override
+  void initState() {
+    super.initState();
+    final RatioState state = Provider.of<RatioState>(context, listen: false);
+    coffeeController = TextEditingController(text: '${state.brewCoffee}');
+    waterController = TextEditingController(text: '${state.brewWater}');
+  }
+
+  @override
+  void dispose() {
+    coffeeController.dispose();
+    waterController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    RatioState state = Provider.of<RatioState>(context);
+
+    state.addListener(() {
+      var oldCoffee = double.tryParse(coffeeController.text) ?? 0.0;
+      if (oldCoffee != state.brewCoffee) {
+        coffeeController.text = '${state.brewCoffee.toStringAsFixed(1)}';
+      }
+
+      var oldWater = double.tryParse(waterController.text) ?? 0.0;
+      if (oldWater != state.brewWater) {
+        waterController.text = '${state.brewWater.toStringAsFixed(1)}';
+      }
+    });
+
+    return Container(
+      child: Column(
+        children: [
+          _ListRowSingleInput(
+            controller: coffeeController,
+            label: 'Coffee',
+            suffix: 'g',
+            textAlign: TextAlign.end,
+            onChanged: state.setBrew(BrewParameter.coffee),
+          ),
+          _ListRowSingleInput(
+            controller: waterController,
+            label: 'Water',
+            suffix: 'ml',
+            textAlign: TextAlign.end,
+            onChanged: state.setBrew(BrewParameter.water),
+          ),
         ],
       ),
     );

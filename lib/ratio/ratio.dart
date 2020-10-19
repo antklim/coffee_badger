@@ -1,10 +1,8 @@
 import 'package:coffee_badger/exceptions.dart';
 
-enum RatioType { absolute, compound }
-var ratioTypes = <RatioType, String>{
-  RatioType.absolute: 'Absolute value',
-  RatioType.compound: 'Coffee per water'
-};
+///
+/// This package contains business logic of ratio calculator.
+///
 
 /// Calculates brew ratio for a given [coffee] weight in grams and [water]
 /// volume in ml.
