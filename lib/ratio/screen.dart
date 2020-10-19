@@ -20,24 +20,28 @@ class RatioScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<RatioState>(
-      create: (_) => RatioState(),
-      builder: (context, _) {
-        return Scaffold(
-          body: Container(
-            child: SafeArea(
-              child: ListView(
-                padding: _LIST_VIEW_PADDING,
-                children: <Widget>[
-                  _Header(),
-                  _RatioSettings(),
-                  Divider(indent: 10.0, endIndent: 10.0, height: 8.0),
-                  _BrewSettings(),
-                ],
-              ),
-            ),
+        create: (_) => RatioState(),
+        builder: (context, _) => RatioScreenContainer());
+  }
+}
+
+class RatioScreenContainer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        child: SafeArea(
+          child: ListView(
+            padding: _LIST_VIEW_PADDING,
+            children: <Widget>[
+              _Header(),
+              _RatioSettings(),
+              Divider(indent: 10.0, endIndent: 10.0, height: 8.0),
+              _BrewSettings(),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -61,6 +65,8 @@ class _RatioSettings extends StatefulWidget {
 }
 
 class _RatioSettingsState extends State<_RatioSettings> {
+  RatioState get state => Provider.of<RatioState>(context);
+
   final ratioTypes = <RatioType, String>{
     RatioType.absolute: 'Absolute value',
     RatioType.compound: 'Coffee per water'
@@ -68,8 +74,6 @@ class _RatioSettingsState extends State<_RatioSettings> {
 
   @override
   Widget build(BuildContext context) {
-    RatioState state = Provider.of<RatioState>(context);
-
     return Container(
       child: ListBody(
         children: [
@@ -106,13 +110,15 @@ class _AbsoluteRatio extends StatefulWidget {
 }
 
 class _AbsoluteRatioState extends State<_AbsoluteRatio> {
+  RatioState get state => Provider.of<RatioState>(context);
+
   TextEditingController controller;
 
   @override
   void initState() {
     super.initState();
-    final RatioState state = Provider.of<RatioState>(context, listen: false);
-    controller = TextEditingController(text: '${state.absoluteRatio}');
+    final RatioState _state = Provider.of<RatioState>(context, listen: false);
+    controller = TextEditingController(text: '${_state.absoluteRatio}');
   }
 
   @override
@@ -123,8 +129,6 @@ class _AbsoluteRatioState extends State<_AbsoluteRatio> {
 
   @override
   Widget build(BuildContext context) {
-    RatioState state = Provider.of<RatioState>(context);
-
     return _ListRowSingleInput(
       controller: controller,
       label: 'Ratio',
@@ -140,17 +144,18 @@ class _CompoundRatio extends StatefulWidget {
 }
 
 class _CompoundRatioState extends State<_CompoundRatio> {
+  RatioState get state => Provider.of<RatioState>(context);
   TextEditingController coffeeController;
   TextEditingController waterController;
 
   @override
   void initState() {
     super.initState();
-    final RatioState state = Provider.of<RatioState>(context, listen: false);
+    final RatioState _state = Provider.of<RatioState>(context, listen: false);
     coffeeController =
-        TextEditingController(text: '${state.compoundRatioCoffee}');
+        TextEditingController(text: '${_state.compoundRatioCoffee}');
     waterController =
-        TextEditingController(text: '${state.compoundRatioWater}');
+        TextEditingController(text: '${_state.compoundRatioWater}');
   }
 
   @override
@@ -162,8 +167,6 @@ class _CompoundRatioState extends State<_CompoundRatio> {
 
   @override
   Widget build(BuildContext context) {
-    RatioState state = Provider.of<RatioState>(context);
-
     return Container(
       height: _LIST_ROW_HEIGHT,
       child: Row(
@@ -206,15 +209,16 @@ class _BrewSettings extends StatefulWidget {
 }
 
 class _BrewSettingsState extends State<_BrewSettings> {
+  RatioState get state => Provider.of<RatioState>(context);
   TextEditingController coffeeController;
   TextEditingController waterController;
 
   @override
   void initState() {
     super.initState();
-    final RatioState state = Provider.of<RatioState>(context, listen: false);
-    coffeeController = TextEditingController(text: '${state.brewCoffee}');
-    waterController = TextEditingController(text: '${state.brewWater}');
+    final RatioState _state = Provider.of<RatioState>(context, listen: false);
+    coffeeController = TextEditingController(text: '${_state.brewCoffee}');
+    waterController = TextEditingController(text: '${_state.brewWater}');
   }
 
   @override
