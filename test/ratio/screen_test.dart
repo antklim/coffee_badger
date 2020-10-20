@@ -3,6 +3,10 @@ import 'package:coffee_badger/ratio/state.dart';
 import 'package:coffee_badger/ratio/use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+
+// TODO: improve testing with better widget finders
+// It should find widget by unique key and asserts widget properties. Now it finds widgets by properties.
 
 void main() {
   group('Ratio Screen', () {
@@ -83,15 +87,100 @@ void main() {
     });
 
     testWidgets('updates water state when ratio changed',
-        (WidgetTester tester) async {},
-        skip: true);
+        (WidgetTester tester) async {
+      RatioState state = RatioState();
+      state.setBrew(BrewParameter.coffee)('10');
+
+      await tester.pumpWidget(MaterialApp(
+        home: ChangeNotifierProvider<RatioState>(
+          create: (_) => state,
+          builder: (context, _) => RatioScreenContainer(),
+        ),
+      ));
+
+      WidgetPredicate coffeeInput =
+          (Widget w) => w is TextField && w.controller.text == '10.0';
+
+      WidgetPredicate waterInputBefore =
+          (Widget w) => w is TextField && w.controller.text == '160.0';
+
+      WidgetPredicate waterInputAfter =
+          (Widget w) => w is TextField && w.controller.text == '150.0';
+
+      expect(find.byWidgetPredicate(coffeeInput), findsOneWidget);
+      expect(find.byWidgetPredicate(waterInputBefore), findsOneWidget);
+      expect(find.byWidgetPredicate(waterInputAfter), findsNothing);
+
+      state.setRatio('15');
+      await tester.pumpAndSettle();
+
+      expect(find.byWidgetPredicate(coffeeInput), findsOneWidget);
+      expect(find.byWidgetPredicate(waterInputBefore), findsNothing);
+      expect(find.byWidgetPredicate(waterInputAfter), findsOneWidget);
+    });
 
     testWidgets('updates water state when coffee changed',
-        (WidgetTester tester) async {},
-        skip: true);
+        (WidgetTester tester) async {
+      RatioState state = RatioState();
+      state.setBrew(BrewParameter.coffee)('10');
+
+      await tester.pumpWidget(MaterialApp(
+        home: ChangeNotifierProvider<RatioState>(
+          create: (_) => state,
+          builder: (context, _) => RatioScreenContainer(),
+        ),
+      ));
+
+      WidgetPredicate coffeeInput =
+          (Widget w) => w is TextField && w.controller.text == '10.0';
+
+      WidgetPredicate waterInputBefore =
+          (Widget w) => w is TextField && w.controller.text == '160.0';
+
+      WidgetPredicate waterInputAfter =
+          (Widget w) => w is TextField && w.controller.text == '192.0';
+
+      expect(find.byWidgetPredicate(coffeeInput), findsOneWidget);
+      expect(find.byWidgetPredicate(waterInputBefore), findsOneWidget);
+      expect(find.byWidgetPredicate(waterInputAfter), findsNothing);
+
+      await tester.enterText(find.byWidgetPredicate(coffeeInput), '12');
+      await tester.pumpAndSettle();
+
+      expect(find.byWidgetPredicate(waterInputBefore), findsNothing);
+      expect(find.byWidgetPredicate(waterInputAfter), findsOneWidget);
+    });
 
     testWidgets('updates coffee state when water changed',
-        (WidgetTester tester) async {},
-        skip: true);
+        (WidgetTester tester) async {
+      RatioState state = RatioState();
+      state.setBrew(BrewParameter.coffee)('10');
+
+      await tester.pumpWidget(MaterialApp(
+        home: ChangeNotifierProvider<RatioState>(
+          create: (_) => state,
+          builder: (context, _) => RatioScreenContainer(),
+        ),
+      ));
+
+      WidgetPredicate coffeeInputBefore =
+          (Widget w) => w is TextField && w.controller.text == '10.0';
+
+      WidgetPredicate coffeeInputAfter =
+          (Widget w) => w is TextField && w.controller.text == '9.4';
+
+      WidgetPredicate waterInput =
+          (Widget w) => w is TextField && w.controller.text == '160.0';
+
+      expect(find.byWidgetPredicate(coffeeInputBefore), findsOneWidget);
+      expect(find.byWidgetPredicate(coffeeInputAfter), findsNothing);
+      expect(find.byWidgetPredicate(waterInput), findsOneWidget);
+
+      await tester.enterText(find.byWidgetPredicate(waterInput), '150');
+      await tester.pumpAndSettle();
+
+      expect(find.byWidgetPredicate(coffeeInputBefore), findsNothing);
+      expect(find.byWidgetPredicate(coffeeInputAfter), findsOneWidget);
+    });
   });
 }
